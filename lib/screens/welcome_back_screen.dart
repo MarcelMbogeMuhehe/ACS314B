@@ -36,7 +36,7 @@ class WelcomeBackScreen extends StatelessWidget {
                         text: const TextSpan(
                           children: [
                             TextSpan(
-                              text: "Welcome back,\n",
+                              text: "Welcome\n",
                               style: TextStyle(
                                 color: Colors.white24,
                                 fontSize: 45.0,
