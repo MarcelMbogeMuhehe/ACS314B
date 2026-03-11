@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,13 +99,13 @@ class SignUpScreen extends StatelessWidget {
                                         child: TextFormField(
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-                        
+
                                             hintText: "Full Name",
                                             prefixIcon: Icon(Icons.person),
                                           ),
                                         ),
                                       ),
-                                        
+
                                       Container(
                                         decoration: BoxDecoration(
                                           border: Border(
@@ -118,8 +123,7 @@ class SignUpScreen extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                        
-                                      
+
                                       Container(
                                         decoration: BoxDecoration(
                                           border: Border(
@@ -132,7 +136,6 @@ class SignUpScreen extends StatelessWidget {
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
 
-                        
                                             hintText: "Moblie number",
                                             prefixIcon: Icon(Icons.person),
                                           ),
@@ -151,9 +154,12 @@ class SignUpScreen extends StatelessWidget {
                                           obscuringCharacter: '*',
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-                        
+
                                             hintText: "Password",
-                                            prefixIcon: Icon(Icons.person),
+                                            prefixIcon: Icon(Icons.lock),
+                                            suffixIcon: Icon(
+                                              Icons.remove_red_eye,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -168,9 +174,12 @@ class SignUpScreen extends StatelessWidget {
                                         child: TextFormField(
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-                        
+
                                             hintText: "Confirm password",
-                                            prefixIcon: Icon(Icons.person),
+                                            prefixIcon: Icon(Icons.lock),
+                                            suffixIcon: Icon(
+                                              Icons.remove_red_eye,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -208,12 +217,13 @@ class SignUpScreen extends StatelessWidget {
                               TextField(),
                               Text(
                                 "Sign up with",
-                        
+
                                 style: TextStyle(color: Colors.grey),
                               ),
                               SizedBox(height: 40),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Logo(Logos.facebook_f),
                                   Logo(Logos.twitter),
@@ -234,6 +244,5 @@ class SignUpScreen extends StatelessWidget {
         ],
       ),
     );
-    
   }
 }

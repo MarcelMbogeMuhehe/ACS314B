@@ -1,12 +1,16 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:icons_plus/icons_plus.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
-  
 
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,25 +101,26 @@ class SignInScreen extends StatelessWidget {
                                         child: TextField(
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-                          
+
                                             hintText: "Use Email or Username",
                                             prefixIcon: Icon(Icons.person),
                                           ),
                                         ),
                                       ),
-                          
+
                                       Container(
                                         decoration: BoxDecoration(),
                                         child: TextFormField(
                                           obscureText: true,
                                           obscuringCharacter: '*',
                                           validator: (value) {
-                                            if (value == null || value.isEmpty) {
+                                            if (value == null ||
+                                                value.isEmpty) {
                                               return "please enter password";
                                             }
                                             return null;
                                           },
-                          
+
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
                                             hintText: "Enter password",
@@ -133,8 +138,13 @@ class SignInScreen extends StatelessWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  
-                                  
+                                  GestureDetector(
+                                    child: Text("Signup"),
+                                    onTap: () {
+                                      Get.toNamed("/signup");
+                                    },
+                                  ),
+                                  Spacer(),
                                   Text(
                                     "Forgot password?",
                                     style: TextStyle(color: Colors.black),
@@ -142,41 +152,44 @@ class SignInScreen extends StatelessWidget {
                                 ],
                               ),
                               SizedBox(height: 30),
-                              Container(
-                                height: 50.0,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: const Color.fromARGB(255, 3, 52, 5),
-                                  borderRadius: BorderRadius.circular(20),
+                              GestureDetector(
+                                child: Container(
+                                  height: 50.0,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(255, 3, 52, 5),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    "login",
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
-                                child: Text(
-                                  "login",
-                                  style: TextStyle(fontSize: 16.0,
-                                  color: Colors.grey),
-                                  
-                                ),
-                                
+                                onTap: () {
+                                  Get.offAndToNamed("/homescreen");
+                                },
                               ),
-                              SizedBox(height: 20,),
+                              SizedBox(height: 20),
                               TextField(),
-                              Text("Sign up with",
-                              
-                              style: TextStyle(
-                                color: Colors.grey
-                              ),),
-                              SizedBox(height: 40,),
+                              Text(
+                                "Sign up with",
+
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              SizedBox(height: 40),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Logo(Logos.facebook_f),
                                   Logo(Logos.twitter),
                                   Logo(Logos.google),
-                                  Logo(Logos.apple)
-                          
+                                  Logo(Logos.apple),
                                 ],
-                              )
-                          
-                              
+                              ),
                             ],
                           ),
                         ),
