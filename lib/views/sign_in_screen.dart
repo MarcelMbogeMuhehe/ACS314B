@@ -102,7 +102,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
 
-                                            hintText: "Use Email or Username",
+                                            labelText: "Use Email or Username",
                                             prefixIcon: Icon(Icons.person),
                                           ),
                                         ),
@@ -123,7 +123,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-                                            hintText: "Enter password",
+                                            labelText: "Enter password",
                                             prefixIcon: Icon(
                                               Icons.password_outlined,
                                             ),
@@ -136,7 +136,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               SizedBox(height: 40.0),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                
                                 children: [
                                   GestureDetector(
                                     child: Text("Signup"),
@@ -144,7 +144,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       Get.toNamed("/signup");
                                     },
                                   ),
-                                  Spacer(),
+                                  SizedBox(width: 170),
                                   Text(
                                     "Forgot password?",
                                     style: TextStyle(color: Colors.black),
@@ -169,7 +169,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   ),
                                 ),
                                 onTap: () {
-                                  Get.offAndToNamed("/homescreen");
+                                  Get.offNamed('/homescreen');
                                 },
                               ),
                               SizedBox(height: 20),
