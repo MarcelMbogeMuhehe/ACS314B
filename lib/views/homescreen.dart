@@ -15,8 +15,9 @@ class _HomescreenState extends State<Homescreen> {
     int _page = 0;
 
   final List<Widget> _views = [
-    DashboardScreen(),
     ProfileScreen(),
+    DashboardScreen(),
+   
 
 
    
@@ -28,12 +29,16 @@ class _HomescreenState extends State<Homescreen> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      extendBody: true,
 
       body: _views[_page],
       bottomNavigationBar: CurvedNavigationBar(
-    backgroundColor: Colors.blueAccent,
+        backgroundColor: Color.fromARGB(255, 5, 57, 7),
+    
+    color: const Color.fromARGB(255, 5, 57, 7),
+    
     items: <Widget>[
-      Icon(Icons.dashboard, size: 30),
+      Icon(Icons.home, size: 30),
       Icon(Icons.person, size: 30),
     
     ],
