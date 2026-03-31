@@ -278,10 +278,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       final serverData = jsonDecode(
                                         response.body,
                                       );
-                                      if (serverData['success'] == 1) {
+                                     if (serverData['status'] == 'success') {
                                         Get.snackbar(
                                           "Success",
-                                          "You are registered",
+                                          "You are registered!",
+                                          backgroundColor: Colors.green,
+                                          colorText: Colors.white,
                                         );
                                         Get.offAndToNamed("/signinscreen");
                                       }

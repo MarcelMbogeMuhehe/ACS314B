@@ -1,13 +1,10 @@
+import 'dart:convert';
+
 import 'package:firstapp/controllers/logincontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:icons_plus/icons_plus.dart';
-
-LoginController loginController = Get.put(LoginController());
-TextEditingController usernameController = TextEditingController();
-TextEditingController passwordController = TextEditingController();
+import 'package:http/http.dart' as http;
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -17,12 +14,24 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  // ✅ Controllers inside class
+  final LoginController loginController = Get.put(LoginController());
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
+  // ✅ dispose to avoid memory leaks
+  @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       extendBodyBehindAppBar: true,
-
       body: Stack(
         children: [
           Image.asset(
@@ -35,9 +44,7 @@ class _SignInScreenState extends State<SignInScreen> {
             bottom: false,
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 30.0),
-
               width: double.infinity,
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -46,7 +53,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // SizedBox(height: 10.0,),
                         Text(
                           "Login",
                           style: TextStyle(color: Colors.white, fontSize: 40.0),
@@ -69,7 +75,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           topRight: Radius.circular(60.0),
                         ),
                       ),
-
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
                         child: SingleChildScrollView(
@@ -105,25 +110,24 @@ class _SignInScreenState extends State<SignInScreen> {
                                           ),
                                         ),
                                         child: TextField(
-                                          controller: usernameController,
+                                          controller: email,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-
-                                            labelText: "Enter Username",
-                                            prefixIcon: Icon(Icons.person),
+                                            labelText: "Enter Email",
+                                            prefixIcon: Icon(Icons.email),
                                           ),
                                         ),
                                       ),
-
                                       Container(
                                         decoration: BoxDecoration(),
                                         child: Obx(
                                           () => TextFormField(
+                                            controller: password,
                                             obscureText: !loginController
                                                 .isPasswordVisible
                                                 .value,
-                                            controller: passwordController,
-
                                             obscuringCharacter: '*',
                                             validator: (value) {
                                               if (value == null ||
@@ -132,7 +136,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                               }
                                               return null;
                                             },
-
                                             decoration: InputDecoration(
                                               border: InputBorder.none,
                                               labelText: "Enter password",
@@ -178,6 +181,64 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               SizedBox(height: 30),
                               GestureDetector(
+                                onTap: () async {
+                                  if (email.text.isEmpty) {
+                                    Get.snackbar("Error", "Email is empty");
+                                  } else if (password.text.isEmpty) {
+                                    Get.snackbar("Error", "Password is empty");
+                                  } else {
+                                    // ✅ try/catch for network errors
+                                    try {
+                                      final response = await http.get(
+                                        Uri.parse(
+                                          "http://192.168.0.100/therapist/login.php?email=${email.text}&password=${password.text}",
+                                        ),
+                                      );
+
+                                      if (response.statusCode == 200) {
+                                        final serverData = jsonDecode(
+                                          response.body
+                                        );
+
+                                        // ✅ Debug prints — remove after testing
+                                        print(serverData);
+                                        print(serverData['code']);
+                                        print(serverData['code'].runtimeType);
+
+                                        if (serverData['code'].toString() ==
+                                            '1') {
+                                          String phone =
+                                              serverData["userdetails"][0]["mobilenumber"];
+                                          print(phone);
+                                          Get.toNamed("/homescreen");
+                                        } else {
+                                          Get.snackbar(
+                                            "Wrong Credentials",
+                                            serverData["message"].toString(),
+                                            backgroundColor: Colors.red,
+                                            colorText: Colors.white,
+                                          );
+                                        }
+                                      } else {
+                                        Get.snackbar(
+                                          "Server Error",
+                                          "Error occurred during Login",
+                                          backgroundColor: Colors.red,
+                                          colorText: Colors.white,
+                                        );
+                                      }
+                                    } catch (e) {
+                                      print("ERROR: " + e.toString());
+                                      Get.snackbar(
+                                        "Error",
+                                        e.toString(),
+                                        backgroundColor: Colors.red,
+                                        colorText: Colors.white,
+                                        duration: Duration(seconds: 10),
+                                      );
+                                    }
+                                  }
+                                },
                                 child: Container(
                                   height: 50.0,
                                   alignment: Alignment.center,
@@ -186,36 +247,18 @@ class _SignInScreenState extends State<SignInScreen> {
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
-                                    "login",
+                                    "Login",
                                     style: TextStyle(
                                       fontSize: 16.0,
                                       color: Colors.grey,
                                     ),
                                   ),
                                 ),
-                                onTap: () {
-                                  bool success = loginController.login(
-                                    usernameController.text,
-                                    passwordController.text,
-                                  );
-                                  if (success) {
-                                    Get.offAndToNamed("/homescreen");
-                                  } else {
-                                    Get.snackbar(
-                                      "Login Failed",
-                                      "Invalid username or password",
-                                      snackPosition: SnackPosition.BOTTOM,
-                                    );
-                                  }
-
-                                  // Get.offNamed('/homescreen');
-                                },
                               ),
                               SizedBox(height: 20),
-                              TextField(),
+                              // ✅ Removed stray empty TextField()
                               Text(
                                 "Sign up with",
-
                                 style: TextStyle(color: Colors.grey),
                               ),
                               SizedBox(height: 40),
