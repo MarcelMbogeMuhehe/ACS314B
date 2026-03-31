@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: const Color(0xFF7B9E87),
         elevation: 0,
         title: const Text(
-          'Hey Nadia 🌿',
+          'Hey Nadia ',
           style: TextStyle(
             color: Color(0xFF2C2C2C),
             fontSize: 18,
@@ -31,17 +33,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         actions: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: const Color.fromARGB(238, 246, 249, 247).withOpacity(0.2),
-            child: const Text(
-              'NK',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 225, 228, 226),
+          GestureDetector(
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: const Color.fromARGB(238, 246, 249, 247).withOpacity(0.2),
+              child: const Text(
+                'NK',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 225, 228, 226),
+                ),
               ),
+              
             ),
+            onTap: () {
+               Get.toNamed("/userprofile");
+            },
           ),
           const SizedBox(width: 16),
         ],

@@ -1,7 +1,13 @@
+import 'package:firstapp/controllers/logincontroller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:icons_plus/icons_plus.dart';
+
+LoginController loginController = Get.put(LoginController());
+TextEditingController usernameController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -99,10 +105,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                           ),
                                         ),
                                         child: TextField(
+                                          controller: usernameController,
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
 
-                                            labelText: "Use Email or Username",
+                                            labelText: "Enter Username",
                                             prefixIcon: Icon(Icons.person),
                                           ),
                                         ),
@@ -110,22 +117,41 @@ class _SignInScreenState extends State<SignInScreen> {
 
                                       Container(
                                         decoration: BoxDecoration(),
-                                        child: TextFormField(
-                                          obscureText: true,
-                                          obscuringCharacter: '*',
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return "please enter password";
-                                            }
-                                            return null;
-                                          },
+                                        child: Obx(
+                                          () => TextFormField(
+                                            obscureText: !loginController
+                                                .isPasswordVisible
+                                                .value,
+                                            controller: passwordController,
 
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            labelText: "Enter password",
-                                            prefixIcon: Icon(
-                                              Icons.password_outlined,
+                                            obscuringCharacter: '*',
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "please enter password";
+                                              }
+                                              return null;
+                                            },
+
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              labelText: "Enter password",
+                                              prefixIcon: Icon(
+                                                Icons.password_outlined,
+                                              ),
+                                              suffixIcon: GestureDetector(
+                                                child: Icon(
+                                                  loginController
+                                                          .isPasswordVisible
+                                                          .value
+                                                      ? Icons.visibility_off
+                                                      : Icons.visibility,
+                                                ),
+                                                onTap: () {
+                                                  loginController
+                                                      .togglePassword();
+                                                },
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -136,7 +162,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               SizedBox(height: 40.0),
                               Row(
-                                
                                 children: [
                                   GestureDetector(
                                     child: Text("Signup"),
@@ -169,7 +194,21 @@ class _SignInScreenState extends State<SignInScreen> {
                                   ),
                                 ),
                                 onTap: () {
-                                  Get.offNamed('/homescreen');
+                                  bool success = loginController.login(
+                                    usernameController.text,
+                                    passwordController.text,
+                                  );
+                                  if (success) {
+                                    Get.offAndToNamed("/homescreen");
+                                  } else {
+                                    Get.snackbar(
+                                      "Login Failed",
+                                      "Invalid username or password",
+                                      snackPosition: SnackPosition.BOTTOM,
+                                    );
+                                  }
+
+                                  // Get.offNamed('/homescreen');
                                 },
                               ),
                               SizedBox(height: 20),

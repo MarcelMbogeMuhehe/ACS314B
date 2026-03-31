@@ -1,5 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/get_navigation.dart';
+import 'package:get/instance_manager.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:http/http.dart' as http;
+
+TextEditingController firstname = TextEditingController();
+TextEditingController lastname = TextEditingController();
+TextEditingController email = TextEditingController();
+TextEditingController mobilenumber = TextEditingController();
+TextEditingController password = TextEditingController();
+TextEditingController confirmpassword = TextEditingController();
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -14,7 +26,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       extendBodyBehindAppBar: true,
-
       body: Stack(
         children: [
           Image.asset(
@@ -27,9 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             bottom: false,
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 30.0),
-
               width: double.infinity,
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -38,7 +47,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // SizedBox(height: 10.0,),
                         Text(
                           "Sign up",
                           style: TextStyle(color: Colors.white, fontSize: 40.0),
@@ -61,7 +69,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           topRight: Radius.circular(60.0),
                         ),
                       ),
-
                       child: SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
@@ -97,15 +104,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           ),
                                         ),
                                         child: TextFormField(
+                                          controller: firstname,
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-
-                                            hintText: "Full Name",
+                                            hintText: "First Name",
                                             prefixIcon: Icon(Icons.person),
                                           ),
                                         ),
                                       ),
-
                                       Container(
                                         decoration: BoxDecoration(
                                           border: Border(
@@ -115,15 +121,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           ),
                                         ),
                                         child: TextFormField(
+                                          controller: lastname,
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-
+                                            hintText: "Last Name",
+                                            prefixIcon: Icon(Icons.person),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                        child: TextFormField(
+                                          controller: email,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
                                             hintText: "Enter Email",
                                             prefixIcon: Icon(Icons.person),
                                           ),
                                         ),
                                       ),
-
                                       Container(
                                         decoration: BoxDecoration(
                                           border: Border(
@@ -133,9 +155,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           ),
                                         ),
                                         child: TextFormField(
+                                          controller: mobilenumber,
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-
                                             hintText: "Moblie number",
                                             prefixIcon: Icon(Icons.person),
                                           ),
@@ -150,11 +172,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           ),
                                         ),
                                         child: TextFormField(
+                                          controller: password,
                                           obscureText: true,
                                           obscuringCharacter: '*',
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-
                                             hintText: "Password",
                                             prefixIcon: Icon(Icons.lock),
                                             suffixIcon: Icon(
@@ -172,9 +194,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           ),
                                         ),
                                         child: TextFormField(
+                                          controller: confirmpassword,
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-
                                             hintText: "Confirm password",
                                             prefixIcon: Icon(Icons.lock),
                                             suffixIcon: Icon(
@@ -183,6 +205,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           ),
                                         ),
                                       ),
+
+                                      
+                                    
                                     ],
                                   ),
                                 ),
@@ -198,26 +223,81 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ],
                               ),
                               SizedBox(height: 30),
-                              Container(
-                                height: 50.0,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: const Color.fromARGB(255, 3, 52, 5),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  "Sign up",
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.grey,
+                              GestureDetector(
+                                child: Container(
+                                  height: 50.0,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(255, 3, 52, 5),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    "Sign up",
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ),
+                                onTap: () async {
+                                  // ✅ validation
+                                  if (firstname.text.isEmpty) {
+                                    Get.snackbar(
+                                      "Error",
+                                      "Please enter firstname",
+                                    );
+                                  } else if (lastname.text.isEmpty) {
+                                    Get.snackbar(
+                                      "Error",
+                                      "Please enter last name",
+                                    );
+                                  } else if (mobilenumber.text.isEmpty) {
+                                    Get.snackbar(
+                                      "Error",
+                                      "Please enter mobile number",
+                                    );
+                                  } else if (password.text.isEmpty ||
+                                      confirmpassword.text.isEmpty ||
+                                      password.text.toString().compareTo(
+                                            confirmpassword.text.toString(),
+                                          ) !=
+                                          0) {
+                                    Get.snackbar(
+                                      "Error",
+                                      "Password and Paswword Confirm should be none empty and matching ",
+                                    );
+                                  } else {
+                                    // ✅ proper URL encoding + correct host
+                                    final response = await http.get(
+                                      Uri.parse(
+                                        "http://192.168.0.100/therapist/get_users.php?firstname=${firstname.text}&lastname=${lastname.text}&mobilenumber=${mobilenumber.text}&email=${email.text}&password=${password.text}&created_at=",
+                                      ),
+                                    );
+
+                                    if (response.statusCode == 200) {
+                                      final serverData = jsonDecode(
+                                        response.body,
+                                      );
+                                      if (serverData['success'] == 1) {
+                                        Get.snackbar(
+                                          "Success",
+                                          "You are registered",
+                                        );
+                                        Get.offAndToNamed("/signinscreen");
+                                      }
+                                    } else {
+                                      Get.snackbar(
+                                        "Registration",
+                                        "Registration Failed",
+                                      );
+                                    }
+                                  }
+                                },
                               ),
                               SizedBox(height: 20),
                               TextField(),
                               Text(
                                 "Sign up with",
-
                                 style: TextStyle(color: Colors.grey),
                               ),
                               SizedBox(height: 40),
