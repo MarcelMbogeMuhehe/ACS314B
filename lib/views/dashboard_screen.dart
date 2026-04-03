@@ -1,4 +1,15 @@
+import 'package:firstapp/models/user_model.dart';
 import 'package:flutter/material.dart';
+
+var userdetails = [
+  User(
+    firstname: "Marcel",
+    lastname: "Muhehe",
+    email: "marcel@gmail.com",
+    mobilenumber: "0792469504",
+    image: "user1/pic.jpg",
+  ),
+];
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -10,132 +21,25 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      appBar:AppBar(
-        automaticallyImplyLeading: false,
-        
-        backgroundColor: Color(0xFF7B9E87),
-        title: Text("Therapist Profiles"),
-        
-
-
-
-      ),
-      body:
-       
-      Padding(
-        
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Card(
-                color: Color(0xFF7B9E87),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ListTile(
-                  leading: const CircleAvatar(
-                    radius: 28,
-                    backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150?img=12",
-                    ),
-                  ),
-                  title: const Text("Dr. Michael Roberts"),
-                  subtitle: const Text("CBT & Stress Management"),
-                ),
-              ),
-              Card(
-                color: Color(0xFF7B9E87),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ListTile(
-                  leading: const CircleAvatar(
-                    radius: 28,
-                    backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150?img=12",
-                    ),
-                  ),
-                  title: const Text("Dr. Michael Roberts"),
-                  subtitle: const Text("CBT & Stress Management"),
-                ),
-              ),
-              Card(
-                color: Color(0xFF7B9E87),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ListTile(
-                  leading: const CircleAvatar(
-                    radius: 28,
-                    backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150?img=12",
-                    ),
-                  ),
-                  title: const Text("Dr. Michael Roberts"),
-                  subtitle: const Text("CBT & Stress Management"),
-                ),
-              ),
-              Card(
-                color: Color(0xFF7B9E87),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ListTile(
-                  leading: const CircleAvatar(
-                    radius: 28,
-                    backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150?img=12",
-                    ),
-                  ),
-                  title: const Text("Dr. Michael Roberts"),
-                  subtitle: const Text("CBT & Stress Management"),
-                ),
-              ),
-              Card(
-                  color: Color(0xFF7B9E87),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: ListTile(
-            leading: const CircleAvatar(
-              radius: 28,
-              backgroundImage: NetworkImage("https://i.pravatar.cc/150?img=12"),
+    return ListView.builder(
+      itemCount: userdetails.length,
+      itemBuilder: (context, index) {
+        final user = userdetails[index]; // <-- grab current user
+        return Row(
+          children: [
+            Image.asset(user.image), // <-- use user data
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.firstname), // <-- use user data
+                Text(user.lastname),
+                Text(user.mobilenumber),
+                
+              ],
             ),
-            title: const Text("Dr. Michael Roberts"),
-            subtitle: const Text("CBT & Stress Management"),
-                   
-                  ),
-                ),
-                Card(
-                color: Color(0xFF7B9E87),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ListTile(
-                  leading: const CircleAvatar(
-                    radius: 28,
-                    backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150?img=12",
-                    ),
-                  ),
-                  title: const Text("Dr. Michael Roberts"),
-                  subtitle: const Text("CBT & Stress Management"),
-                ),
-              ),
-          
-            ],
-          
-          
-          
-          
-          
-          ),
-        ),
-      ),
-
-     
-      
+          ],
+        );
+      },
     );
   }
 }

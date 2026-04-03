@@ -10,17 +10,18 @@ TextEditingController firstname = TextEditingController();
 TextEditingController lastname = TextEditingController();
 TextEditingController email = TextEditingController();
 TextEditingController mobilenumber = TextEditingController();
+TextEditingController specialization = TextEditingController();
 TextEditingController password = TextEditingController();
 TextEditingController confirmpassword = TextEditingController();
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class TherapistSignup extends StatefulWidget {
+  const TherapistSignup({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<TherapistSignup> createState() => _TherapistSignupState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _TherapistSignupState extends State<TherapistSignup> {
   // ✅ Only added this
   final Signupcontroller signupController = Get.put(Signupcontroller());
 
@@ -166,6 +167,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           ),
                                         ),
                                       ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                        child: TextFormField(
+                                          controller: specialization,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: "Specialization",
+                                            prefixIcon: Icon(Icons.book),
+                                          ),
+                                        ),
+                                      ),
                                       // ✅ Only changed password field to use controller
                                       Container(
                                         decoration: BoxDecoration(
@@ -242,15 +260,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                               ),
                               SizedBox(height: 40.0),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Forgot password?",
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                ],
-                              ),
+                             
                               SizedBox(height: 30),
                               GestureDetector(
                                 child: Container(
@@ -297,7 +307,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   } else {
                                     final response = await http.get(
                                       Uri.parse(
-                                        "http://localhost/therapist/get_users.php?firstname=${firstname.text}&lastname=${lastname.text}&mobilenumber=${mobilenumber.text}&email=${email.text}&password=${password.text}&created_at=",
+                                        "http://localhost/therapist2/therapist_create.php?firstname=${firstname.text}&lastname=${lastname.text}&mobilenumber=${mobilenumber.text}&email=${email.text}&password=${password.text}&specialization=${specialization.text}&created_at&id",
                                       ),
                                     );
 
@@ -312,7 +322,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           backgroundColor: Colors.green,
                                           colorText: Colors.white,
                                         );
-                                        Get.offAndToNamed("/signinscreen");
+                                        Get.offAndToNamed("/therapistlogin");
                                       }
                                     } else {
                                       Get.snackbar(

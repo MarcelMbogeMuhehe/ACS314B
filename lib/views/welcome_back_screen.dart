@@ -1,8 +1,10 @@
 
 
 import 'package:flutter/material.dart';
-import 'sign_in_screen.dart';
-import 'sign_up_screen.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+
+
 
 class WelcomeBackScreen extends StatelessWidget {
   const WelcomeBackScreen({super.key});
@@ -44,9 +46,9 @@ class WelcomeBackScreen extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: "Enter your employee details",
+                              text: "Continue as",
                               style: TextStyle(
-                                fontSize: 20.0,
+                                fontSize: 25.0,
                                 color: Colors.white24,
                               ),
                             ),
@@ -73,14 +75,9 @@ class WelcomeBackScreen extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SignInScreen(),
-                                ),
-                              );
+                               Get.toNamed("/signinscreen");
                             },
-                            child: const Text("Sign in"),
+                            child: const Text("User"),
                           ),
                         ),
 
@@ -97,14 +94,9 @@ class WelcomeBackScreen extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SignUpScreen(),
-                                ),
-                              );
+                              Get.toNamed("/therapistlogin");
                             },
-                            child: const Text("Sign up"),
+                            child: const Text("Therapist"),
                           ),
                         ),
                       ],

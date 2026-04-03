@@ -6,14 +6,14 @@ import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:http/http.dart' as http;
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class TherapistLogin extends StatefulWidget {
+  const TherapistLogin({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<TherapistLogin> createState() => _TherapistLoginState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _TherapistLoginState extends State<TherapistLogin> {
   // ✅ Controllers inside class
   final LoginController loginController = Get.put(LoginController());
   final TextEditingController email = TextEditingController();
@@ -22,7 +22,7 @@ class _SignInScreenState extends State<SignInScreen> {
   // ✅ dispose to avoid memory leaks
   @override
   void dispose() {
-    email.dispose();
+   email.dispose();
     password.dispose();
     super.dispose();
   }
@@ -164,18 +164,20 @@ class _SignInScreenState extends State<SignInScreen> {
                                 ),
                               ),
                               SizedBox(height: 40.0),
-                              Row(
+                           Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   GestureDetector(
-                                    child: Text("Dont have an account? Signup",
-                                    style: TextStyle(fontWeight: FontWeight.bold),),
+                                    child: Text(
+                                      "Dont have an account? Signup",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     onTap: () {
-                                      Get.toNamed("/signup");
+                                      Get.toNamed("/therapistsignup");
                                     },
                                   ),
-                          
-                              
                                 ],
                               ),
                               SizedBox(height: 30),
@@ -190,19 +192,16 @@ class _SignInScreenState extends State<SignInScreen> {
                                     try {
                                       final response = await http.get(
                                         Uri.parse(
-                                          "http://localhost/therapist/login.php?email=${email.text}&password=${password.text}",
+                                          "http://localhost/therapist2/therapist_login.php?email=${email.text}&password=${password.text}",
                                         ),
                                       );
 
                                       if (response.statusCode == 200) {
                                         final serverData = jsonDecode(
-                                          response.body
+                                          response.body,
                                         );
 
-                                        // ✅ Debug prints — remove after testing
-                                        print(serverData);
-                                        print(serverData['code']);
-                                        print(serverData['code'].runtimeType);
+                                       
 
                                         if (serverData['code'].toString() ==
                                             '1') {
@@ -256,13 +255,11 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               SizedBox(height: 20),
                               TextField(),
-                              SizedBox(height: 40),
-                             
                               Text(
                                 "Sign up with",
                                 style: TextStyle(color: Colors.grey),
                               ),
-                             
+                              SizedBox(height: 40),
                               
                               Row(
                                 mainAxisAlignment:
