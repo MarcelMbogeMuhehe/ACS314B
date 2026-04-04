@@ -1,6 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firstapp/views/dashboard_screen.dart';
+import 'package:firstapp/views/booked_therapist_screen.dart';
+
 import 'package:firstapp/views/profile_screen.dart';
+import 'package:firstapp/views/therapist_list_screen.dart';
 import 'package:flutter/material.dart';
 
 
@@ -16,7 +18,8 @@ class _HomescreenState extends State<Homescreen> {
 
   final List<Widget> _views = [
     ProfileScreen(),
-    DashboardScreen(),
+    TherapistListScreen(),
+    BookedTherapistsScreen(),
    
 
 
@@ -40,6 +43,7 @@ class _HomescreenState extends State<Homescreen> {
     items: <Widget>[
       Icon(Icons.home, size: 30),
       Icon(Icons.person, size: 30),
+      Icon(Icons.bookmark, size: 30),
     
     ],
     onTap: (index) {

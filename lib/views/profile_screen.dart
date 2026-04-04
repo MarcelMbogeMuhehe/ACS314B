@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firstapp/views/therapist_list_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,17 +19,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int neutralCount = 0;
   int happyCount = 0;
   int veryHappyCount = 0;
+
+  // ✅ Added these
+  String firstname = '';
+  Map? bookedTherapist;
+  bool isLoadingBooking = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+    fetchBookedTherapist();
+  }
+
+  // ✅ Load user firstname from SharedPreferences
+  Future<void> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      firstname = prefs.getString('firstname') ?? 'User';
+    });
+  }
+
+  // ✅ Fetch first booked therapist from DB
+  Future<void> fetchBookedTherapist() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String userId = prefs.getString('id') ?? '';
+
+      final response = await http.get(
+        Uri.parse(
+          "http://localhost/therapist2/booking_read.php?user_id=$userId",
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == 'success' && data['data'].isNotEmpty) {
+          setState(() {
+            bookedTherapist = data['data'][0]; // ✅ Get first booked therapist
+            isLoadingBooking = false;
+          });
+        } else {
+          setState(() => isLoadingBooking = false);
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+      setState(() => isLoadingBooking = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: const Color(0xFFF7F3EE),
+      backgroundColor: const Color(0xFFF7F3EE),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFF7B9E87),
         elevation: 0,
-        title: const Text(
-          'Hey Nadia ',
-          style: TextStyle(
+        title: Text(
+          // ✅ Shows actual user firstname
+          'Hey $firstname',
+          style: const TextStyle(
             color: Color(0xFF2C2C2C),
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -36,19 +90,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           GestureDetector(
             child: CircleAvatar(
               radius: 18,
-              backgroundColor: const Color.fromARGB(238, 246, 249, 247).withOpacity(0.2),
-              child: const Text(
-                'NK',
-                style: TextStyle(
+              backgroundColor: const Color.fromARGB(
+                238,
+                246,
+                249,
+                247,
+              ).withOpacity(0.2),
+              child: Text(
+                // ✅ Shows first letter of firstname
+                firstname.isNotEmpty ? firstname[0].toUpperCase() : 'U',
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 225, 228, 226),
                 ),
               ),
-              
             ),
             onTap: () {
-               Get.toNamed("/userprofile");
+              Get.toNamed("/userprofile");
             },
           ),
           const SizedBox(width: 16),
@@ -78,102 +137,112 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                         GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              sadCount++;
-                            });
-                          },
+                        GestureDetector(
+                          onTap: () => setState(() => sadCount++),
                           child: Text('😔', style: TextStyle(fontSize: 28)),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              confusedCount++;
-                            });
-                          },
+                          onTap: () => setState(() => confusedCount++),
                           child: Text('😕', style: TextStyle(fontSize: 28)),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              neutralCount++;
-                            });
-                          },
+                          onTap: () => setState(() => neutralCount++),
                           child: Text('😐', style: TextStyle(fontSize: 28)),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              happyCount++;
-                            });
-                          },
+                          onTap: () => setState(() => happyCount++),
                           child: Text('🙂', style: TextStyle(fontSize: 28)),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              veryHappyCount++;
-                            });
-                          },
+                          onTap: () => setState(() => veryHappyCount++),
                           child: Text('😄', style: TextStyle(fontSize: 28)),
                         ),
                       ],
-          
-          
-                    )
+                    ),
                   ],
                 ),
-          
               ),
-              SizedBox(height: 20,),
-          
-              Row(
+              const SizedBox(height: 20),
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text("Your therapist",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
-                    color: Colors.black
-                  ),),
+                  Text(
+                    "Your therapist",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                      color: Colors.black,
+                    ),
+                  ),
                 ],
-          
-              
               ),
-              SizedBox(height: 20,),
-              Card(
-                color: Color(0xFF7B9E87),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: ListTile(
-          leading: const CircleAvatar(
-            radius: 28,
-            backgroundImage: NetworkImage("https://i.pravatar.cc/150?img=12"),
-          ),
-          title: const Text("Dr. Michael Roberts"),
-          subtitle: const Text("CBT & Stress Management"),
-                 
-                ),
-              ),
-              SizedBox(height: 20,),
-              Row(
+              const SizedBox(height: 20),
+
+              // ✅ Dynamic booked therapist card
+              isLoadingBooking
+                  ? const Center(child: CircularProgressIndicator())
+                  : bookedTherapist == null
+                  ? Card(
+                      color: const Color(0xFF7B9E87),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ListTile(
+                        leading: const CircleAvatar(
+                          radius: 28,
+                          backgroundColor: Color.fromARGB(255, 3, 52, 5),
+                          child: Icon(Icons.person, color: Colors.white),
+                        ),
+                        title: const Text("No therapist booked yet"),
+                        subtitle: const Text("Go to therapists to book one"),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () => Get.to(() => TherapistListScreen()),
+                      ),
+                    )
+                  : Card(
+                      color: const Color(0xFF7B9E87),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          radius: 28,
+                          backgroundColor: const Color.fromARGB(255, 3, 52, 5),
+                          child: Text(
+                            bookedTherapist!['therapist_name'].isNotEmpty
+                                ? bookedTherapist!['therapist_name'][0]
+                                      .toUpperCase()
+                                : '?',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        title: Text(bookedTherapist!['therapist_name']),
+                        subtitle: Text(bookedTherapist!['specialization']),
+                      ),
+                    ),
+
+              const SizedBox(height: 20),
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-          Text("Self help Articles",
-          style: TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          
-          ),
-          ),
+                  Text(
+                    "Self help Articles",
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
                 ],
-                
               ),
-              SizedBox(height: 20,),
+              const SizedBox(height: 20),
               GestureDetector(
                 onTap: () async {
                   final url = Uri.parse(
@@ -237,7 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              const SizedBox(height: 10),
               GestureDetector(
                 onTap: () async {
                   final url = Uri.parse(
@@ -301,60 +370,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 17,),
-              Text("Mood Tracker",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
-
-              ),),
-
-               Card(
-                color: Color(0xFF7B9E87),
+              const SizedBox(height: 17),
+              const Text(
+                "Mood Tracker",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+              ),
+              Card(
+                color: const Color(0xFF7B9E87),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                 child: Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    
                     moodColumn('😔', sadCount),
                     moodColumn('😕', confusedCount),
                     moodColumn('😐', neutralCount),
                     moodColumn('🙂', happyCount),
                     moodColumn('😄', veryHappyCount),
                   ],
-                               ),
-               ),
-              
-                
-              
-          
-          
-          
-          
-              
-                
-                
-             
-          
+                ),
+              ),
             ],
-          
-          
-          
-          
-          
           ),
         ),
-        
       ),
-
-      
-
-
     );
-    
   }
+
   Widget moodColumn(String emoji, int count) {
     return Column(
       children: [

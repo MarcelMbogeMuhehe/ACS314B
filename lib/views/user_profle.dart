@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfle extends StatefulWidget {
   const UserProfle({super.key});
@@ -10,6 +10,33 @@ class UserProfle extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfle> {
+  String firstname = '';
+  String lastname = '';
+  String email = '';
+  String mobilenumber = '';
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      firstname = prefs.getString('firstname') ?? '';
+      lastname = prefs.getString('lastname') ?? '';
+      email = prefs.getString('email') ?? '';
+      mobilenumber = prefs.getString('mobilenumber') ?? '';
+    });
+  }
+
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Get.offAllNamed("/signinscreen");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +51,6 @@ class _UserProfileState extends State<UserProfle> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-
       body: Stack(
         children: [
           Container(color: Colors.black.withOpacity(0.4)),
@@ -44,12 +70,29 @@ class _UserProfileState extends State<UserProfle> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // ✅ Avatar with first letter instead of broken asset
                           CircleAvatar(
-                            backgroundImage: AssetImage("assets/"),
                             radius: 50,
-                            backgroundColor: Colors.white24,
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              3,
+                              52,
+                              5,
+                            ),
+                            child: Text(
+                              // ✅ Null check fixed here
+                              firstname.isNotEmpty
+                                  ? firstname[0].toUpperCase()
+                                  : 'U',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                           SizedBox(height: 10),
+                          // ✅ Shows actual full name
                           ListTile(
                             leading: Container(
                               width: 40,
@@ -61,7 +104,10 @@ class _UserProfileState extends State<UserProfle> {
                               child: Icon(Icons.person_2_sharp),
                             ),
                             title: Text(
-                              "Name",
+                              // ✅ Null check fixed here
+                              (firstname.isNotEmpty || lastname.isNotEmpty)
+                                  ? "$firstname $lastname"
+                                  : 'Unknown',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -69,6 +115,7 @@ class _UserProfileState extends State<UserProfle> {
                               ),
                             ),
                           ),
+                          // ✅ Shows actual email
                           ListTile(
                             leading: Container(
                               width: 40,
@@ -80,7 +127,8 @@ class _UserProfileState extends State<UserProfle> {
                               child: Icon(Icons.email),
                             ),
                             title: Text(
-                              "Email",
+                              // ✅ Null check fixed here
+                              email.isNotEmpty ? email : 'Unknown',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -88,7 +136,7 @@ class _UserProfileState extends State<UserProfle> {
                               ),
                             ),
                           ),
-
+                          // ✅ Shows actual mobile number
                           ListTile(
                             leading: Container(
                               width: 40,
@@ -100,7 +148,10 @@ class _UserProfileState extends State<UserProfle> {
                               child: Icon(Icons.phone_iphone_sharp),
                             ),
                             title: Text(
-                              "Mobile Number",
+                              // ✅ Null check fixed here
+                              mobilenumber.isNotEmpty
+                                  ? mobilenumber
+                                  : 'Unknown',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -108,26 +159,10 @@ class _UserProfileState extends State<UserProfle> {
                               ),
                             ),
                           ),
-                          ListTile(
-                            leading: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: Colors.amber.withOpacity(0.5),
-                              ),
-                              child: Icon(Icons.phone_iphone_sharp),
-                            ),
-                            title: Text(
-                              "Password",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
+                          const SizedBox(height: 20),
+                          // ✅ Logout clears SharedPreferences
                           GestureDetector(
+                            onTap: logout,
                             child: Container(
                               height: 50.0,
                               alignment: Alignment.center,
@@ -136,16 +171,13 @@ class _UserProfileState extends State<UserProfle> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                "log out",
+                                "Log out",
                                 style: TextStyle(
                                   fontSize: 16.0,
                                   color: Colors.grey,
                                 ),
                               ),
                             ),
-                            onTap: () {
-                              Get.offNamed("/signinscreen");
-                            },
                           ),
                         ],
                       ),

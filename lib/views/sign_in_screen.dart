@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart'; // ✅ Added
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -14,12 +15,10 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  // ✅ Controllers inside class
   final LoginController loginController = Get.put(LoginController());
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
 
-  // ✅ dispose to avoid memory leaks
   @override
   void dispose() {
     email.dispose();
@@ -168,14 +167,16 @@ class _SignInScreenState extends State<SignInScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   GestureDetector(
-                                    child: Text("Dont have an account? Signup",
-                                    style: TextStyle(fontWeight: FontWeight.bold),),
+                                    child: Text(
+                                      "Dont have an account? Signup",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     onTap: () {
                                       Get.toNamed("/signup");
                                     },
                                   ),
-                          
-                              
                                 ],
                               ),
                               SizedBox(height: 30),
@@ -186,7 +187,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                   } else if (password.text.isEmpty) {
                                     Get.snackbar("Error", "Password is empty");
                                   } else {
-                                    // ✅ try/catch for network errors
                                     try {
                                       final response = await http.get(
                                         Uri.parse(
@@ -196,19 +196,50 @@ class _SignInScreenState extends State<SignInScreen> {
 
                                       if (response.statusCode == 200) {
                                         final serverData = jsonDecode(
-                                          response.body
+                                          response.body,
                                         );
 
-                                        // ✅ Debug prints — remove after testing
                                         print(serverData);
                                         print(serverData['code']);
                                         print(serverData['code'].runtimeType);
 
                                         if (serverData['code'].toString() ==
                                             '1') {
-                                          // String phone =
-                                          //     serverData["userdetails"][0]["mobilenumber"];
-                                          // print(phone);
+                                          var user =
+                                              serverData["userdetails"][0];
+
+                                          // ✅ Save user details to SharedPreferences
+                                          SharedPreferences prefs =
+                                              await SharedPreferences.getInstance();
+                                          await prefs.setString(
+                                            'id',
+                                            user['id'].toString(),
+                                          );
+                                          await prefs.setString(
+                                            'firstname',
+                                            user['firstname'].toString(),
+                                          );
+                                          await prefs.setString(
+                                            'lastname',
+                                            user['lastname'].toString(),
+                                          );
+                                          await prefs.setString(
+                                            'email',
+                                            user['email'].toString(),
+                                          );
+                                          await prefs.setString(
+                                            'mobilenumber',
+                                            user['mobilenumber'].toString(),
+                                          );
+                                          await prefs.setBool(
+                                            'isLoggedIn',
+                                            true,
+                                          );
+
+                                          print(
+                                            "Saved user id: ${user['id']}",
+                                          ); // ✅ Debug
+
                                           Get.toNamed("/homescreen");
                                         } else {
                                           Get.snackbar(
@@ -255,15 +286,12 @@ class _SignInScreenState extends State<SignInScreen> {
                                 ),
                               ),
                               SizedBox(height: 20),
-                              TextField(),
+                              // ✅ Removed stray empty TextField()
                               SizedBox(height: 40),
-                             
                               Text(
                                 "Sign up with",
                                 style: TextStyle(color: Colors.grey),
                               ),
-                             
-                              
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
