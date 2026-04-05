@@ -99,8 +99,9 @@ class _TherapistListScreenState extends State<TherapistListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text("Our Therapists"),
-        backgroundColor: const Color.fromARGB(255, 3, 52, 5),
+        backgroundColor: const Color(0xFF7B9E87),
         foregroundColor: Colors.white,
       ),
       body: isLoading

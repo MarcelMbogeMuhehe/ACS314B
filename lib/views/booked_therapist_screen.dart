@@ -50,8 +50,9 @@ class _BookedTherapistsScreenState extends State<BookedTherapistsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text("My Booked Therapists"),
-        backgroundColor: const Color.fromARGB(255, 3, 52, 5),
+        backgroundColor: const Color(0xFF7B9E87),
         foregroundColor: Colors.white,
       ),
       body: isLoading

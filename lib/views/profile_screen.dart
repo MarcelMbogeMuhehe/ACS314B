@@ -1,10 +1,10 @@
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:firstapp/views/therapist_list_screen.dart';
+import 'package:firstapp/controllers/navigation_controller.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,53 +20,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int happyCount = 0;
   int veryHappyCount = 0;
 
-  // ✅ Added these
   String firstname = '';
-  Map? bookedTherapist;
-  bool isLoadingBooking = true;
 
   @override
   void initState() {
     super.initState();
     loadUserData();
-    fetchBookedTherapist();
   }
 
-  // ✅ Load user firstname from SharedPreferences
   Future<void> loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       firstname = prefs.getString('firstname') ?? 'User';
     });
-  }
-
-  // ✅ Fetch first booked therapist from DB
-  Future<void> fetchBookedTherapist() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String userId = prefs.getString('id') ?? '';
-
-      final response = await http.get(
-        Uri.parse(
-          "http://localhost/therapist2/booking_read.php?user_id=$userId",
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['status'] == 'success' && data['data'].isNotEmpty) {
-          setState(() {
-            bookedTherapist = data['data'][0]; // ✅ Get first booked therapist
-            isLoadingBooking = false;
-          });
-        } else {
-          setState(() => isLoadingBooking = false);
-        }
-      }
-    } catch (e) {
-      print(e.toString());
-      setState(() => isLoadingBooking = false);
-    }
   }
 
   @override
@@ -78,7 +44,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: const Color(0xFF7B9E87),
         elevation: 0,
         title: Text(
-          // ✅ Shows actual user firstname
           'Hey $firstname',
           style: const TextStyle(
             color: Color(0xFF2C2C2C),
@@ -97,7 +62,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 247,
               ).withOpacity(0.2),
               child: Text(
-                // ✅ Shows first letter of firstname
                 firstname.isNotEmpty ? firstname[0].toUpperCase() : 'U',
                 style: const TextStyle(
                   fontSize: 12,
@@ -181,52 +145,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 20),
 
-              // ✅ Dynamic booked therapist card
-              isLoadingBooking
-                  ? const Center(child: CircularProgressIndicator())
-                  : bookedTherapist == null
-                  ? Card(
-                      color: const Color(0xFF7B9E87),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: ListTile(
-                        leading: const CircleAvatar(
-                          radius: 28,
-                          backgroundColor: Color.fromARGB(255, 3, 52, 5),
-                          child: Icon(Icons.person, color: Colors.white),
-                        ),
-                        title: const Text("No therapist booked yet"),
-                        subtitle: const Text("Go to therapists to book one"),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () => Get.to(() => TherapistListScreen()),
-                      ),
-                    )
-                  : Card(
-                      color: const Color(0xFF7B9E87),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          radius: 28,
-                          backgroundColor: const Color.fromARGB(255, 3, 52, 5),
-                          child: Text(
-                            bookedTherapist!['therapist_name'].isNotEmpty
-                                ? bookedTherapist!['therapist_name'][0]
-                                      .toUpperCase()
-                                : '?',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        title: Text(bookedTherapist!['therapist_name']),
-                        subtitle: Text(bookedTherapist!['specialization']),
-                      ),
-                    ),
+              // ✅ Simple clickable card
+              GestureDetector(
+               // ✅ Now works from any screen
+                onTap: () {
+                  final navController = Get.find<NavigationController>();
+                  navController.changePage(1);
+                },
+                
+                child: // ✅ New — move onTap to ListTile and use Get.put
+Card(
+  color: const Color(0xFF7B9E87),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(16),
+  ),
+  child: ListTile(
+    onTap: () {
+      // ✅ putIfAbsent ensures controller exists
+      NavigationController navController = Get.isRegistered<NavigationController>()
+          ? Get.find<NavigationController>()
+          : Get.put(NavigationController());
+      navController.changePage(1);
+    },
+    leading: const CircleAvatar(
+      radius: 28,
+      backgroundColor: Color.fromARGB(255, 3, 52, 5),
+      child: Icon(Icons.person_search, color: Colors.white),
+    ),
+    title: const Text(
+      "Book a Therapist",
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    ),
+    subtitle: const Text(
+      "Tap to find and book a therapist",
+      style: TextStyle(color: Colors.white70),
+    ),
+    trailing: const Icon(
+      Icons.arrow_forward_ios,
+      color: Colors.white,
+      size: 16,
+    ),
+  ),
+),
+              ),
 
               const SizedBox(height: 20),
               const Row(

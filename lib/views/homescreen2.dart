@@ -1,6 +1,5 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firstapp/views/dashboard_screen.dart';
-import 'package:firstapp/views/profile_screen.dart';
+import 'package:firstapp/views/therapist_dashboard.dart';
 import 'package:flutter/material.dart';
 
 class Homescreen2 extends StatefulWidget {
@@ -13,7 +12,9 @@ class Homescreen2 extends StatefulWidget {
 class _Homescreen2State extends State<Homescreen2> {
   int _page = 0;
 
-  final List<Widget> _views = [ProfileScreen(), DashboardScreen()];
+  final List<Widget> _views = [TherapistHomescreen(),
+  
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class _Homescreen2State extends State<Homescreen2> {
 
         items: <Widget>[
           Icon(Icons.home, size: 30),
-          Icon(Icons.person, size: 30),
+          
         ],
         onTap: (index) {
           setState(() {

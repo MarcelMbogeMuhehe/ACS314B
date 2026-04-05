@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart'; // ✅ Added
 
 class TherapistLogin extends StatefulWidget {
   const TherapistLogin({super.key});
@@ -22,7 +23,7 @@ class _TherapistLoginState extends State<TherapistLogin> {
   // ✅ dispose to avoid memory leaks
   @override
   void dispose() {
-   email.dispose();
+    email.dispose();
     password.dispose();
     super.dispose();
   }
@@ -164,7 +165,7 @@ class _TherapistLoginState extends State<TherapistLogin> {
                                 ),
                               ),
                               SizedBox(height: 40.0),
-                           Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   GestureDetector(
@@ -188,7 +189,6 @@ class _TherapistLoginState extends State<TherapistLogin> {
                                   } else if (password.text.isEmpty) {
                                     Get.snackbar("Error", "Password is empty");
                                   } else {
-                                    // ✅ try/catch for network errors
                                     try {
                                       final response = await http.get(
                                         Uri.parse(
@@ -201,14 +201,49 @@ class _TherapistLoginState extends State<TherapistLogin> {
                                           response.body,
                                         );
 
-                                       
-
                                         if (serverData['code'].toString() ==
                                             '1') {
-                                          // String phone =
-                                          //     serverData["userdetails"][0]["mobilenumber"];
-                                          // print(phone);
-                                          Get.toNamed("/homescreen");
+                                          var therapist =
+                                              serverData["therapistdetails"][0];
+
+                                          // ✅ Added SharedPreferences save
+                                          SharedPreferences prefs =
+                                              await SharedPreferences.getInstance();
+                                          await prefs.setString(
+                                            'therapist_id',
+                                            therapist['id'].toString(),
+                                          );
+                                          await prefs.setString(
+                                            'therapist_firstname',
+                                            therapist['firstname'].toString(),
+                                          );
+                                          await prefs.setString(
+                                            'therapist_lastname',
+                                            therapist['lastname'].toString(),
+                                          );
+                                          await prefs.setString(
+                                            'therapist_email',
+                                            therapist['email'].toString(),
+                                          );
+                                          await prefs.setString(
+                                            'therapist_mobilenumber',
+                                            therapist['mobilenumber']
+                                                .toString(),
+                                          );
+                                          await prefs.setString(
+                                            'therapist_specialization',
+                                            therapist['specialization']
+                                                .toString(),
+                                          );
+                                          await prefs.setBool(
+                                            'isTherapistLoggedIn',
+                                            true,
+                                          );
+
+                                          // ✅ Fixed navigation to therapist homescreen
+                                          Get.offAllNamed(
+                                            "/homescreen2",
+                                          );
                                         } else {
                                           Get.snackbar(
                                             "Wrong Credentials",
@@ -260,7 +295,6 @@ class _TherapistLoginState extends State<TherapistLogin> {
                                 style: TextStyle(color: Colors.grey),
                               ),
                               SizedBox(height: 40),
-                              
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
